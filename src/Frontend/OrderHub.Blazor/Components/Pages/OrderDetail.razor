@@ -7,11 +7,11 @@
 
 @if (_loading)
 {
-    <p>Hämtar...</p>
+    <p>Loading...</p>
 }
 else if (_order is null)
 {
-    <p>Order hittades inte.</p>
+    <p>Order not found.</p>
 }
 else
 {
@@ -22,24 +22,24 @@ else
 
     <section class="oh-meta">
         <div><strong>Status:</strong> <span class="oh-badge oh-badge-@_order.Status.ToString().ToLower()">@_order.Status</span></div>
-        <div><strong>Skapad:</strong> @_order.CreatedAt.ToString("yyyy-MM-dd HH:mm")</div>
-        <div><strong>Leveransdatum:</strong> @(_order.DueDate?.ToString("yyyy-MM-dd") ?? "–")</div>
+        <div><strong>Created:</strong> @_order.CreatedAt.ToString("yyyy-MM-dd HH:mm")</div>
+        <div><strong>Due date:</strong> @(_order.DueDate?.ToString("yyyy-MM-dd") ?? "–")</div>
         @if (!string.IsNullOrEmpty(_order.Notes))
         {
-            <div><strong>Notering:</strong> @_order.Notes</div>
+            <div><strong>Notes:</strong> @_order.Notes</div>
         }
     </section>
 
     <section>
-        <h2>Rader</h2>
+        <h2>Lines</h2>
         <table class="oh-table">
             <thead>
                 <tr>
-                    <th>Produkt</th>
-                    <th>Stålgrad</th>
-                    <th class="oh-right">Kvantitet (kg)</th>
-                    <th class="oh-right">À-pris</th>
-                    <th class="oh-right">Belopp</th>
+                    <th>Product</th>
+                    <th>Steel grade</th>
+                    <th class="oh-right">Quantity (kg)</th>
+                    <th class="oh-right">Unit price</th>
+                    <th class="oh-right">Amount</th>
                 </tr>
             </thead>
             <tbody>
@@ -50,16 +50,16 @@ else
                         <td>@l.SteelGrade</td>
                         <td class="oh-right">@l.Quantity.ToString("N0")</td>
                         <td class="oh-right">@l.UnitPrice.ToString("N2")</td>
-                        @* KÄND BRIST: affärslogiken (radbelopp) räknas ut här i vyn istället
-                           för i domänen eller backend-tjänsten. *@
+                        @* KNOWN GAP: business logic (line amount) is computed here in the view
+                           instead of in the domain or the backend service. *@
                         <td class="oh-right">@((l.Quantity * l.UnitPrice).ToString("N2"))</td>
                     </tr>
                 }
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="4" class="oh-right"><strong>Totalt:</strong></td>
-                    @* KÄND BRIST: totalsumman räknas ut här i vyn istället för i backend. *@
+                    <td colspan="4" class="oh-right"><strong>Total:</strong></td>
+                    @* KNOWN GAP: the total is computed here in the view instead of in the backend. *@
                     <td class="oh-right"><strong>@_order.Lines.Sum(l => l.Quantity * l.UnitPrice).ToString("N2")</strong></td>
                 </tr>
             </tfoot>
@@ -68,15 +68,15 @@ else
 
     <section class="oh-toolbar">
         <label>
-            Ändra status:
+            Change status:
             <select @bind="_newStatus">
                 <option value="Pending">Pending</option>
-                <option value="InProduction">I produktion</option>
-                <option value="Completed">Klar</option>
-                <option value="Cancelled">Avbruten</option>
+                <option value="InProduction">In production</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
             </select>
         </label>
-        <button class="oh-btn oh-btn-primary" @onclick="UpdateStatusAsync">Spara status</button>
+        <button class="oh-btn oh-btn-primary" @onclick="UpdateStatusAsync">Save status</button>
     </section>
 }
 

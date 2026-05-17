@@ -6,12 +6,12 @@ public class OrderLine
     public int OrderId { get; set; }
     public int ProductId { get; set; }
 
-    // NOTE: Affärslogik (totalpris) räknas idag ut i Blazor-vyn istället för här.
-    // Det är en av de medvetna bristerna i refererensappen.
+    // NOTE: Business logic (line total) is currently computed in the Blazor view
+    // instead of here. One of the intentional gaps in this reference app.
     public decimal Quantity { get; set; }
     public decimal UnitPrice { get; set; }
 
-    // Snapshot vid orderläggning (produktinfo kan ändras senare)
+    // Snapshot at order placement time (product info may change later)
     public string ProductName { get; set; } = string.Empty;
     public string SteelGrade { get; set; } = string.Empty;
 }

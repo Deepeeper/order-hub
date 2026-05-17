@@ -5,8 +5,8 @@ using Xunit;
 
 namespace OrderHub.Api.Tests;
 
-// KÄND BRIST: detta är den enda testfilen för API:t. Den täcker bara att roten svarar.
-// Order-, Customer- och Product-endpoints saknar tester helt.
+// KNOWN GAP: this is the only test file for the API. It only covers that the root responds.
+// Order, Customer and Product endpoints have no tests at all.
 public class OrderEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;

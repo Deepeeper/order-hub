@@ -55,8 +55,8 @@ public static class OrderEndpoints
         });
 
         // POST /api/orders
-        // KÄND BRIST: ingen validering. CustomerId 0 eller saknad, tomma Lines, negativ Quantity
-        // accepteras alla utan kontroll.
+        // KNOWN GAP: no validation. CustomerId 0 or missing, empty Lines, negative Quantity —
+        // all accepted without any check.
         group.MapPost("/", async (
             CreateOrderRequest request,
             IOrderRepository orderRepo,
@@ -73,7 +73,7 @@ public static class OrderEndpoints
                 lines.Add(new OrderLine
                 {
                     ProductId = l.ProductId,
-                    ProductName = product?.Name ?? "(okänd)",
+                    ProductName = product?.Name ?? "(unknown)",
                     SteelGrade = product?.SteelGrade ?? string.Empty,
                     Quantity = l.Quantity,
                     UnitPrice = product?.PricePerKg ?? 0m
@@ -84,7 +84,7 @@ public static class OrderEndpoints
             {
                 OrderNumber = $"OH-{DateTime.UtcNow:yyyyMMddHHmmss}",
                 CustomerId = request.CustomerId,
-                CustomerName = customer?.Name ?? "(okänd kund)",
+                CustomerName = customer?.Name ?? "(unknown customer)",
                 Status = OrderStatus.Pending,
                 CreatedAt = DateTime.UtcNow,
                 DueDate = request.DueDate,
@@ -97,7 +97,7 @@ public static class OrderEndpoints
         });
 
         // PATCH /api/orders/{id}/status
-        // KÄND BRIST: ingen authorization. Vem som helst kan ändra status, även Cancelled.
+        // KNOWN GAP: no authorization. Anyone can change status, including to Cancelled.
         group.MapPatch("/{id:int}/status", async (
             int id,
             UpdateStatusRequest request,
@@ -111,7 +111,7 @@ public static class OrderEndpoints
             return Results.NoContent();
         });
 
-        // KÄND BRIST: ingen DELETE-endpoint finns trots att UI:t förväntar sig kunna radera.
+        // KNOWN GAP: no DELETE endpoint exists, even though the UI expects to be able to delete.
 
         return app;
     }

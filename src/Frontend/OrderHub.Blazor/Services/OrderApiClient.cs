@@ -6,9 +6,9 @@ public class OrderApiClient
 {
     private readonly HttpClient _http;
 
-    // KÄND BRIST: API-URL:en är hårdkodad här istället för att läsas från konfiguration.
-    // Detta är medvetet inlagt som demo-material — så fort man kör mot en annan miljö
-    // än lokalt så går det sönder.
+    // KNOWN GAP: the API URL is hardcoded here instead of being read from configuration.
+    // Intentionally introduced as demo material — the moment you run against any
+    // environment other than local, things break.
     private const string ApiBaseUrl = "http://localhost:5101";
 
     public OrderApiClient(HttpClient http)

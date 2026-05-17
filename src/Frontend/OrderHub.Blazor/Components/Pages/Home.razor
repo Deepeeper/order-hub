@@ -2,16 +2,16 @@
 @rendermode InteractiveServer
 @inject OrderApiClient OrderApi
 
-<PageTitle>OrderHub – Översikt</PageTitle>
+<PageTitle>OrderHub – Overview</PageTitle>
 
 <header class="oh-page-header">
-    <h1>Översikt</h1>
-    <p class="oh-lede">Intern orderhantering för stålprodukter.</p>
+    <h1>Overview</h1>
+    <p class="oh-lede">Internal order management for steel products.</p>
 </header>
 
 @if (_loading)
 {
-    <p>Hämtar...</p>
+    <p>Loading...</p>
 }
 else
 {
@@ -21,24 +21,24 @@ else
             <span class="oh-stat-value">@_pending</span>
         </div>
         <div class="oh-stat">
-            <span class="oh-stat-label">I produktion</span>
+            <span class="oh-stat-label">In production</span>
             <span class="oh-stat-value">@_inProduction</span>
         </div>
         <div class="oh-stat">
-            <span class="oh-stat-label">Klara</span>
+            <span class="oh-stat-label">Completed</span>
             <span class="oh-stat-value">@_completed</span>
         </div>
         <div class="oh-stat">
-            <span class="oh-stat-label">Avbrutna</span>
+            <span class="oh-stat-label">Cancelled</span>
             <span class="oh-stat-value">@_cancelled</span>
         </div>
     </section>
 
     <section>
-        <h2>Senaste ordrar</h2>
+        <h2>Latest orders</h2>
         <table class="oh-table">
             <thead>
-                <tr><th>Order</th><th>Kund</th><th>Status</th><th>Skapad</th></tr>
+                <tr><th>Order</th><th>Customer</th><th>Status</th><th>Created</th></tr>
             </thead>
             <tbody>
                 @foreach (var o in _recent)

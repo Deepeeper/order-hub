@@ -16,17 +16,17 @@ public class OrderRepository : IOrderRepository
 
     public async Task<List<Order>> GetAllAsync(OrderStatus? status, CancellationToken ct)
     {
-        // KÄND BRIST: filtret bygger med "OR Pending" inbakad — vilket innebär att
-        // även Pending-ordrar alltid kommer med, oavsett vad anroparen frågar efter.
-        // Det här är medvetet för demo. Att uppmärksamma och fixa den här buggen är
-        // en av aha-momenten — Claude hittar den genom att läsa både endpoint, repo och
-        // den lilla test som finns.
+        // KNOWN GAP: the filter bakes in "OR Pending", which means that Pending
+        // orders are always returned, regardless of what the caller asked for.
+        // This is intentional for the demo. Catching and fixing this bug is one
+        // of the aha-moments — Claude finds it by reading endpoint, repo, and the
+        // one existing test.
         var orders = await _db.Orders
             .Where(o => status == null || o.Status == status || o.Status == OrderStatus.Pending)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync(ct);
 
-        // KÄND BRIST: N+1 query. Lines hämtas i en loop per order istället för Include.
+        // KNOWN GAP: N+1 query. Lines are fetched in a loop per order instead of using Include.
         foreach (var order in orders)
         {
             order.Lines = await _db.OrderLines

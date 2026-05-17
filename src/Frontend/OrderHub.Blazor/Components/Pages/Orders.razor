@@ -3,34 +3,34 @@
 @inject OrderApiClient OrderApi
 @inject NavigationManager Nav
 
-<PageTitle>Ordrar</PageTitle>
+<PageTitle>Orders</PageTitle>
 
 <header class="oh-page-header">
-    <h1>Ordrar</h1>
-    <p class="oh-lede">Filtrera, granska och statussätt.</p>
+    <h1>Orders</h1>
+    <p class="oh-lede">Filter, review and set status.</p>
 </header>
 
 <section class="oh-toolbar">
     <label>
         Status:
         <select @bind="_filter" @bind:after="ReloadAsync">
-            <option value="">Alla</option>
+            <option value="">All</option>
             <option value="Pending">Pending</option>
-            <option value="InProduction">I produktion</option>
-            <option value="Completed">Klara</option>
-            <option value="Cancelled">Avbrutna</option>
+            <option value="InProduction">In production</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
         </select>
     </label>
-    <a class="oh-btn oh-btn-primary" href="orders/new">Ny order</a>
+    <a class="oh-btn oh-btn-primary" href="orders/new">New order</a>
 </section>
 
 @if (_loading)
 {
-    <p>Hämtar...</p>
+    <p>Loading...</p>
 }
 else if (!_orders.Any())
 {
-    <p class="oh-empty">Inga ordrar matchar filtret.</p>
+    <p class="oh-empty">No orders match the filter.</p>
 }
 else
 {
@@ -38,11 +38,11 @@ else
         <thead>
             <tr>
                 <th>Order</th>
-                <th>Kund</th>
+                <th>Customer</th>
                 <th>Status</th>
-                <th>Skapad</th>
-                <th>Leveransdatum</th>
-                <th>Rader</th>
+                <th>Created</th>
+                <th>Due date</th>
+                <th>Lines</th>
                 <th></th>
             </tr>
         </thead>
@@ -57,7 +57,7 @@ else
                     <td>@(o.DueDate?.ToString("yyyy-MM-dd") ?? "–")</td>
                     <td>@o.LineCount</td>
                     <td>
-                        <button class="oh-btn oh-btn-danger" @onclick="() => DeleteAsync(o.Id)">Radera</button>
+                        <button class="oh-btn oh-btn-danger" @onclick="() => DeleteAsync(o.Id)">Delete</button>
                     </td>
                 </tr>
             }
@@ -94,19 +94,19 @@ else
         }
     }
 
-    // KÄND BRIST: Radera-knappen i UI:t anropar en endpoint som inte finns på API:t.
-    // Den här metoden kraschar — det är en av demo-uppgifterna att fixa.
+    // KNOWN GAP: the Delete button in the UI calls an endpoint that doesn't exist on the API.
+    // This method does nothing useful — fixing it is one of the lab tasks.
     async Task DeleteAsync(int id)
     {
         try
         {
-            // TODO: API saknar DELETE-endpoint. Knappen är "för tidigt utlevererad".
+            // TODO: the API has no DELETE endpoint. The button shipped too early.
             await Task.Delay(100); // placeholder
-            _message = $"Order {id} kunde inte raderas (saknad endpoint).";
+            _message = $"Order {id} could not be deleted (endpoint missing).";
         }
         catch (Exception ex)
         {
-            _message = $"Fel: {ex.Message}";
+            _message = $"Error: {ex.Message}";
         }
     }
 }

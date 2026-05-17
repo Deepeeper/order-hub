@@ -42,7 +42,7 @@ app.MapGet("/", () => Results.Ok(new
 {
     service = "OrderHub.Api",
     version = "0.1.0",
-    docs = "Inga än. Skriv en CLAUDE.md först :-)"
+    docs = "None yet. Write a CLAUDE.md first :-)"
 }));
 
 app.MapOrderEndpoints();
@@ -51,5 +51,5 @@ app.MapProductEndpoints();
 
 app.Run();
 
-// Behövs för WebApplicationFactory i testerna
+// Needed by WebApplicationFactory in the tests
 public partial class Program { }

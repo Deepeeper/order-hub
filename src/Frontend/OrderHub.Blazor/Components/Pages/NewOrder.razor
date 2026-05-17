@@ -5,24 +5,24 @@
 @inject ProductApiClient ProductApi
 @inject NavigationManager Nav
 
-<PageTitle>Ny order</PageTitle>
+<PageTitle>New order</PageTitle>
 
 <header class="oh-page-header">
-    <h1>Ny order</h1>
-    <p class="oh-lede">Lägg en order mot en befintlig kund.</p>
+    <h1>New order</h1>
+    <p class="oh-lede">Place an order against an existing customer.</p>
 </header>
 
 @if (_loading)
 {
-    <p>Hämtar kunder och produkter...</p>
+    <p>Loading customers and products...</p>
 }
 else
 {
     <div class="oh-form">
         <label>
-            Kund:
+            Customer:
             <select @bind="_customerId">
-                <option value="0">— välj kund —</option>
+                <option value="0">— select customer —</option>
                 @foreach (var c in _customers)
                 {
                     <option value="@c.Id">@c.Name (@c.Country)</option>
@@ -31,36 +31,36 @@ else
         </label>
 
         <label>
-            Leveransdatum:
+            Due date:
             <input type="date" @bind="_dueDate" />
         </label>
 
         <label>
-            Notering:
-            <input type="text" @bind="_notes" placeholder="Frivilligt" />
+            Notes:
+            <input type="text" @bind="_notes" placeholder="Optional" />
         </label>
 
-        <h2>Rader</h2>
+        <h2>Lines</h2>
         @for (int i = 0; i < _lines.Count; i++)
         {
             var idx = i;
             <div class="oh-line-row">
                 <select @bind="_lines[idx].ProductId">
-                    <option value="0">— välj produkt —</option>
+                    <option value="0">— select product —</option>
                     @foreach (var p in _products)
                     {
                         <option value="@p.Id">@p.Name (@p.SteelGrade)</option>
                     }
                 </select>
-                <input type="number" min="0" step="1" @bind="_lines[idx].Quantity" placeholder="Kvantitet (kg)" />
+                <input type="number" min="0" step="1" @bind="_lines[idx].Quantity" placeholder="Quantity (kg)" />
                 <button class="oh-btn oh-btn-secondary" @onclick="() => RemoveLine(idx)">−</button>
             </div>
         }
-        <button class="oh-btn oh-btn-secondary" @onclick="AddLine">+ Lägg till rad</button>
+        <button class="oh-btn oh-btn-secondary" @onclick="AddLine">+ Add line</button>
 
         <div class="oh-toolbar">
-            <button class="oh-btn oh-btn-primary" @onclick="SubmitAsync">Skapa order</button>
-            <a class="oh-btn" href="orders">Avbryt</a>
+            <button class="oh-btn oh-btn-primary" @onclick="SubmitAsync">Create order</button>
+            <a class="oh-btn" href="orders">Cancel</a>
         </div>
 
         @if (!string.IsNullOrEmpty(_error))
@@ -105,8 +105,8 @@ else
 
     async Task SubmitAsync()
     {
-        // KÄND BRIST: ingen klientvalidering. Vi skickar in oavsett om kund saknas
-        // eller om alla rader är 0. Backend saknar också validering.
+        // KNOWN GAP: no client-side validation. We submit regardless of missing customer
+        // or all-zero lines. The backend has no validation either.
         try
         {
             var request = new CreateOrderRequest(
@@ -123,7 +123,7 @@ else
         }
         catch (Exception ex)
         {
-            _error = $"Kunde inte skapa order: {ex.Message}";
+            _error = $"Could not create order: {ex.Message}";
         }
     }
 }
