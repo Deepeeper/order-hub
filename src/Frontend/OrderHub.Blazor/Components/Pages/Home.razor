@@ -1,0 +1,79 @@
+@page "/"
+@rendermode InteractiveServer
+@inject OrderApiClient OrderApi
+
+<PageTitle>OrderHub – Översikt</PageTitle>
+
+<header class="oh-page-header">
+    <h1>Översikt</h1>
+    <p class="oh-lede">Intern orderhantering för stålprodukter.</p>
+</header>
+
+@if (_loading)
+{
+    <p>Hämtar...</p>
+}
+else
+{
+    <section class="oh-stats">
+        <div class="oh-stat">
+            <span class="oh-stat-label">Pending</span>
+            <span class="oh-stat-value">@_pending</span>
+        </div>
+        <div class="oh-stat">
+            <span class="oh-stat-label">I produktion</span>
+            <span class="oh-stat-value">@_inProduction</span>
+        </div>
+        <div class="oh-stat">
+            <span class="oh-stat-label">Klara</span>
+            <span class="oh-stat-value">@_completed</span>
+        </div>
+        <div class="oh-stat">
+            <span class="oh-stat-label">Avbrutna</span>
+            <span class="oh-stat-value">@_cancelled</span>
+        </div>
+    </section>
+
+    <section>
+        <h2>Senaste ordrar</h2>
+        <table class="oh-table">
+            <thead>
+                <tr><th>Order</th><th>Kund</th><th>Status</th><th>Skapad</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var o in _recent)
+                {
+                    <tr>
+                        <td><a href="orders/@o.Id">@o.OrderNumber</a></td>
+                        <td>@o.CustomerName</td>
+                        <td><span class="oh-badge oh-badge-@o.Status.ToString().ToLower()">@o.Status</span></td>
+                        <td>@o.CreatedAt.ToString("yyyy-MM-dd")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+}
+
+@code {
+    bool _loading = true;
+    int _pending, _inProduction, _completed, _cancelled;
+    List<OrderSummaryDto> _recent = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var all = await OrderApi.GetOrdersAsync();
+            _pending = all.Count(o => o.Status == OrderStatus.Pending);
+            _inProduction = all.Count(o => o.Status == OrderStatus.InProduction);
+            _completed = all.Count(o => o.Status == OrderStatus.Completed);
+            _cancelled = all.Count(o => o.Status == OrderStatus.Cancelled);
+            _recent = all.Take(5).ToList();
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+}

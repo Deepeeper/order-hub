@@ -1,0 +1,45 @@
+@page "/customers"
+@rendermode InteractiveServer
+@inject CustomerApiClient CustomerApi
+
+<PageTitle>Kunder</PageTitle>
+
+<header class="oh-page-header">
+    <h1>Kunder</h1>
+    <p class="oh-lede">Befintliga kunder.</p>
+</header>
+
+@if (_loading)
+{
+    <p>Hämtar...</p>
+}
+else
+{
+    <table class="oh-table">
+        <thead>
+            <tr><th>Namn</th><th>Land</th><th>Kontakt</th><th>Aktiv</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var c in _customers)
+            {
+                <tr>
+                    <td>@c.Name</td>
+                    <td>@c.Country</td>
+                    <td>@c.ContactEmail</td>
+                    <td>@(c.IsActive ? "Ja" : "Nej")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    bool _loading = true;
+    List<CustomerDto> _customers = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try { _customers = await CustomerApi.GetCustomersAsync(); }
+        finally { _loading = false; }
+    }
+}

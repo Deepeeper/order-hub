@@ -1,0 +1,109 @@
+@page "/orders/{Id:int}"
+@rendermode InteractiveServer
+@inject OrderApiClient OrderApi
+@inject NavigationManager Nav
+
+<PageTitle>Order @(_order?.OrderNumber ?? "")</PageTitle>
+
+@if (_loading)
+{
+    <p>Hämtar...</p>
+}
+else if (_order is null)
+{
+    <p>Order hittades inte.</p>
+}
+else
+{
+    <header class="oh-page-header">
+        <h1>@_order.OrderNumber</h1>
+        <p class="oh-lede">@_order.CustomerName</p>
+    </header>
+
+    <section class="oh-meta">
+        <div><strong>Status:</strong> <span class="oh-badge oh-badge-@_order.Status.ToString().ToLower()">@_order.Status</span></div>
+        <div><strong>Skapad:</strong> @_order.CreatedAt.ToString("yyyy-MM-dd HH:mm")</div>
+        <div><strong>Leveransdatum:</strong> @(_order.DueDate?.ToString("yyyy-MM-dd") ?? "–")</div>
+        @if (!string.IsNullOrEmpty(_order.Notes))
+        {
+            <div><strong>Notering:</strong> @_order.Notes</div>
+        }
+    </section>
+
+    <section>
+        <h2>Rader</h2>
+        <table class="oh-table">
+            <thead>
+                <tr>
+                    <th>Produkt</th>
+                    <th>Stålgrad</th>
+                    <th class="oh-right">Kvantitet (kg)</th>
+                    <th class="oh-right">À-pris</th>
+                    <th class="oh-right">Belopp</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var l in _order.Lines)
+                {
+                    <tr>
+                        <td>@l.ProductName</td>
+                        <td>@l.SteelGrade</td>
+                        <td class="oh-right">@l.Quantity.ToString("N0")</td>
+                        <td class="oh-right">@l.UnitPrice.ToString("N2")</td>
+                        @* KÄND BRIST: affärslogiken (radbelopp) räknas ut här i vyn istället
+                           för i domänen eller backend-tjänsten. *@
+                        <td class="oh-right">@((l.Quantity * l.UnitPrice).ToString("N2"))</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="oh-right"><strong>Totalt:</strong></td>
+                    @* KÄND BRIST: totalsumman räknas ut här i vyn istället för i backend. *@
+                    <td class="oh-right"><strong>@_order.Lines.Sum(l => l.Quantity * l.UnitPrice).ToString("N2")</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    </section>
+
+    <section class="oh-toolbar">
+        <label>
+            Ändra status:
+            <select @bind="_newStatus">
+                <option value="Pending">Pending</option>
+                <option value="InProduction">I produktion</option>
+                <option value="Completed">Klar</option>
+                <option value="Cancelled">Avbruten</option>
+            </select>
+        </label>
+        <button class="oh-btn oh-btn-primary" @onclick="UpdateStatusAsync">Spara status</button>
+    </section>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    bool _loading = true;
+    OrderDetailDto? _order;
+    string _newStatus = "Pending";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _order = await OrderApi.GetOrderAsync(Id);
+            if (_order is not null) _newStatus = _order.Status.ToString();
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    async Task UpdateStatusAsync()
+    {
+        if (_order is null) return;
+        await OrderApi.UpdateStatusAsync(_order.Id, Enum.Parse<OrderStatus>(_newStatus));
+        _order = await OrderApi.GetOrderAsync(Id);
+    }
+}

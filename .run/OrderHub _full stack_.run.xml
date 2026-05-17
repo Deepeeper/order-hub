@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="OrderHub (full stack)" type="CompoundRunConfigurationType">
+    <toRun name="OrderHub.Api: http" type="LaunchSettings" />
+    <toRun name="OrderHub.Blazor: http" type="LaunchSettings" />
+    <method v="2" />
+  </configuration>
+</component>

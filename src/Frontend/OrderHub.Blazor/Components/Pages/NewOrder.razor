@@ -1,0 +1,129 @@
+@page "/orders/new"
+@rendermode InteractiveServer
+@inject OrderApiClient OrderApi
+@inject CustomerApiClient CustomerApi
+@inject ProductApiClient ProductApi
+@inject NavigationManager Nav
+
+<PageTitle>Ny order</PageTitle>
+
+<header class="oh-page-header">
+    <h1>Ny order</h1>
+    <p class="oh-lede">Lägg en order mot en befintlig kund.</p>
+</header>
+
+@if (_loading)
+{
+    <p>Hämtar kunder och produkter...</p>
+}
+else
+{
+    <div class="oh-form">
+        <label>
+            Kund:
+            <select @bind="_customerId">
+                <option value="0">— välj kund —</option>
+                @foreach (var c in _customers)
+                {
+                    <option value="@c.Id">@c.Name (@c.Country)</option>
+                }
+            </select>
+        </label>
+
+        <label>
+            Leveransdatum:
+            <input type="date" @bind="_dueDate" />
+        </label>
+
+        <label>
+            Notering:
+            <input type="text" @bind="_notes" placeholder="Frivilligt" />
+        </label>
+
+        <h2>Rader</h2>
+        @for (int i = 0; i < _lines.Count; i++)
+        {
+            var idx = i;
+            <div class="oh-line-row">
+                <select @bind="_lines[idx].ProductId">
+                    <option value="0">— välj produkt —</option>
+                    @foreach (var p in _products)
+                    {
+                        <option value="@p.Id">@p.Name (@p.SteelGrade)</option>
+                    }
+                </select>
+                <input type="number" min="0" step="1" @bind="_lines[idx].Quantity" placeholder="Kvantitet (kg)" />
+                <button class="oh-btn oh-btn-secondary" @onclick="() => RemoveLine(idx)">−</button>
+            </div>
+        }
+        <button class="oh-btn oh-btn-secondary" @onclick="AddLine">+ Lägg till rad</button>
+
+        <div class="oh-toolbar">
+            <button class="oh-btn oh-btn-primary" @onclick="SubmitAsync">Skapa order</button>
+            <a class="oh-btn" href="orders">Avbryt</a>
+        </div>
+
+        @if (!string.IsNullOrEmpty(_error))
+        {
+            <p class="oh-error">@_error</p>
+        }
+    </div>
+}
+
+@code {
+    bool _loading = true;
+    List<CustomerDto> _customers = new();
+    List<ProductDto> _products = new();
+
+    int _customerId = 0;
+    DateTime? _dueDate = DateTime.Today.AddDays(30);
+    string? _notes;
+    List<LineModel> _lines = new() { new() };
+    string? _error;
+
+    class LineModel
+    {
+        public int ProductId { get; set; }
+        public decimal Quantity { get; set; }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _customers = await CustomerApi.GetCustomersAsync();
+            _products = await ProductApi.GetProductsAsync();
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    void AddLine() => _lines.Add(new());
+    void RemoveLine(int i) { if (_lines.Count > 1) _lines.RemoveAt(i); }
+
+    async Task SubmitAsync()
+    {
+        // KÄND BRIST: ingen klientvalidering. Vi skickar in oavsett om kund saknas
+        // eller om alla rader är 0. Backend saknar också validering.
+        try
+        {
+            var request = new CreateOrderRequest(
+                _customerId,
+                _dueDate,
+                _notes,
+                _lines.Select(l => new CreateOrderLineRequest(l.ProductId, l.Quantity)).ToList());
+
+            var id = await OrderApi.CreateOrderAsync(request);
+            if (id.HasValue)
+            {
+                Nav.NavigateTo($"orders/{id.Value}");
+            }
+        }
+        catch (Exception ex)
+        {
+            _error = $"Kunde inte skapa order: {ex.Message}";
+        }
+    }
+}

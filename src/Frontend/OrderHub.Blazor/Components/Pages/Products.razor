@@ -1,0 +1,45 @@
+@page "/products"
+@rendermode InteractiveServer
+@inject ProductApiClient ProductApi
+
+<PageTitle>Produkter</PageTitle>
+
+<header class="oh-page-header">
+    <h1>Produkter</h1>
+    <p class="oh-lede">Tillgängliga stålprodukter.</p>
+</header>
+
+@if (_loading)
+{
+    <p>Hämtar...</p>
+}
+else
+{
+    <table class="oh-table">
+        <thead>
+            <tr><th>Namn</th><th>Stålgrad</th><th>Dimension</th><th class="oh-right">Pris/kg</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var p in _products)
+            {
+                <tr>
+                    <td>@p.Name</td>
+                    <td>@p.SteelGrade</td>
+                    <td>@p.DimensionMm</td>
+                    <td class="oh-right">@p.PricePerKg.ToString("N2")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    bool _loading = true;
+    List<ProductDto> _products = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try { _products = await ProductApi.GetProductsAsync(); }
+        finally { _loading = false; }
+    }
+}

@@ -1,0 +1,112 @@
+@page "/orders"
+@rendermode InteractiveServer
+@inject OrderApiClient OrderApi
+@inject NavigationManager Nav
+
+<PageTitle>Ordrar</PageTitle>
+
+<header class="oh-page-header">
+    <h1>Ordrar</h1>
+    <p class="oh-lede">Filtrera, granska och statussätt.</p>
+</header>
+
+<section class="oh-toolbar">
+    <label>
+        Status:
+        <select @bind="_filter" @bind:after="ReloadAsync">
+            <option value="">Alla</option>
+            <option value="Pending">Pending</option>
+            <option value="InProduction">I produktion</option>
+            <option value="Completed">Klara</option>
+            <option value="Cancelled">Avbrutna</option>
+        </select>
+    </label>
+    <a class="oh-btn oh-btn-primary" href="orders/new">Ny order</a>
+</section>
+
+@if (_loading)
+{
+    <p>Hämtar...</p>
+}
+else if (!_orders.Any())
+{
+    <p class="oh-empty">Inga ordrar matchar filtret.</p>
+}
+else
+{
+    <table class="oh-table">
+        <thead>
+            <tr>
+                <th>Order</th>
+                <th>Kund</th>
+                <th>Status</th>
+                <th>Skapad</th>
+                <th>Leveransdatum</th>
+                <th>Rader</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var o in _orders)
+            {
+                <tr>
+                    <td><a href="orders/@o.Id">@o.OrderNumber</a></td>
+                    <td>@o.CustomerName</td>
+                    <td><span class="oh-badge oh-badge-@o.Status.ToString().ToLower()">@o.Status</span></td>
+                    <td>@o.CreatedAt.ToString("yyyy-MM-dd")</td>
+                    <td>@(o.DueDate?.ToString("yyyy-MM-dd") ?? "–")</td>
+                    <td>@o.LineCount</td>
+                    <td>
+                        <button class="oh-btn oh-btn-danger" @onclick="() => DeleteAsync(o.Id)">Radera</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (!string.IsNullOrEmpty(_message))
+{
+    <div class="oh-toast">@_message</div>
+}
+
+@code {
+    bool _loading = true;
+    string _filter = "";
+    List<OrderSummaryDto> _orders = new();
+    string? _message;
+
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    async Task ReloadAsync()
+    {
+        _loading = true;
+        try
+        {
+            OrderStatus? status = string.IsNullOrEmpty(_filter)
+                ? null
+                : Enum.Parse<OrderStatus>(_filter);
+            _orders = await OrderApi.GetOrdersAsync(status);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    // KÄND BRIST: Radera-knappen i UI:t anropar en endpoint som inte finns på API:t.
+    // Den här metoden kraschar — det är en av demo-uppgifterna att fixa.
+    async Task DeleteAsync(int id)
+    {
+        try
+        {
+            // TODO: API saknar DELETE-endpoint. Knappen är "för tidigt utlevererad".
+            await Task.Delay(100); // placeholder
+            _message = $"Order {id} kunde inte raderas (saknad endpoint).";
+        }
+        catch (Exception ex)
+        {
+            _message = $"Fel: {ex.Message}";
+        }
+    }
+}

@@ -1,0 +1,38 @@
+# Build output
+bin/
+obj/
+out/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# .NET
+*.nupkg
+*.snupkg
+*.dll
+*.pdb
+*.exe
+*.cache
+project.lock.json
+project.assets.json
+*.binlog
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+
+# Logs
+*.log
+
+# Demo-day notes (lokala)
+DEMO-NOTES.md
