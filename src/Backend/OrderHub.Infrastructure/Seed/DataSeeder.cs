@@ -28,14 +28,14 @@ public static class DataSeeder
 
         var products = new[]
         {
-            new Product { Name = "Round bar SAE 4140",     SteelGrade = "SAE 4140",  DimensionMm = "Ø 50",   PricePerKg = 28.50m },
-            new Product { Name = "Round bar SAE 4340",     SteelGrade = "SAE 4340",  DimensionMm = "Ø 65",   PricePerKg = 31.20m },
-            new Product { Name = "Round bar 100Cr6",       SteelGrade = "100Cr6",    DimensionMm = "Ø 80",   PricePerKg = 34.80m },
-            new Product { Name = "Round bar 42CrMo4",      SteelGrade = "42CrMo4",   DimensionMm = "Ø 100",  PricePerKg = 27.90m },
-            new Product { Name = "Flat bar SS2541",        SteelGrade = "SS 2541",   DimensionMm = "40 x 80", PricePerKg = 32.10m },
-            new Product { Name = "Hexagonal bar C45",      SteelGrade = "C45",       DimensionMm = "SW 36",  PricePerKg = 25.40m },
-            new Product { Name = "Round bar 16MnCr5",      SteelGrade = "16MnCr5",   DimensionMm = "Ø 30",   PricePerKg = 26.30m, Discontinued = true },
-            new Product { Name = "Round bar SAE 8620",     SteelGrade = "SAE 8620",  DimensionMm = "Ø 45",   PricePerKg = 27.20m },
+            new Product { Name = "Round bar SAE 4140",     SteelGrade = "SAE 4140",  DimensionMm = "Ø 50",   PricePerKg = 28.50m, LeadTimeDays = 5m },
+            new Product { Name = "Round bar SAE 4340",     SteelGrade = "SAE 4340",  DimensionMm = "Ø 65",   PricePerKg = 31.20m, LeadTimeDays = 14.5m },
+            new Product { Name = "Round bar 100Cr6",       SteelGrade = "100Cr6",    DimensionMm = "Ø 80",   PricePerKg = 34.80m, LeadTimeDays = 21m },
+            new Product { Name = "Round bar 42CrMo4",      SteelGrade = "42CrMo4",   DimensionMm = "Ø 100",  PricePerKg = 27.90m, LeadTimeDays = 7m },
+            new Product { Name = "Flat bar SS2541",        SteelGrade = "SS 2541",   DimensionMm = "40 x 80", PricePerKg = 32.10m, LeadTimeDays = 10.5m },
+            new Product { Name = "Hexagonal bar C45",      SteelGrade = "C45",       DimensionMm = "SW 36",  PricePerKg = 25.40m, LeadTimeDays = 14m },
+            new Product { Name = "Round bar 16MnCr5",      SteelGrade = "16MnCr5",   DimensionMm = "Ø 30",   PricePerKg = 26.30m, LeadTimeDays = 5.5m, Discontinued = true },
+            new Product { Name = "Round bar SAE 8620",     SteelGrade = "SAE 8620",  DimensionMm = "Ø 45",   PricePerKg = 27.20m, LeadTimeDays = 14m },
         };
         db.Products.AddRange(products);
 

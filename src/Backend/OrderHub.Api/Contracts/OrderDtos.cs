@@ -44,4 +44,4 @@ public record UpdateStatusRequest(OrderStatus Status);
 
 public record CustomerDto(int Id, string Name, string Country, string ContactEmail, bool IsActive);
 
-public record ProductDto(int Id, string Name, string SteelGrade, string DimensionMm, decimal PricePerKg);
+public record ProductDto(int Id, string Name, string SteelGrade, string DimensionMm, decimal PricePerKg, decimal LeadTimeDays);

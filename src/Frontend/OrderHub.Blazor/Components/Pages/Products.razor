@@ -17,7 +17,13 @@ else
 {
     <table class="oh-table">
         <thead>
-            <tr><th>Name</th><th>Steel grade</th><th>Dimension</th><th class="oh-right">Price/kg</th></tr>
+            <tr>
+                <th>Name</th>
+                <th>Steel grade</th>
+                <th>Dimension</th>
+                <th class="oh-right">Price/kg</th>
+                <th class="oh-right">Lead time</th>
+            </tr>
         </thead>
         <tbody>
             @foreach (var p in _products)
@@ -27,6 +33,7 @@ else
                     <td>@p.SteelGrade</td>
                     <td>@p.DimensionMm</td>
                     <td class="oh-right">@p.PricePerKg.ToString("N2")</td>
+                    <td class="oh-right">@p.LeadTimeDays days</td>
                 </tr>
             }
         </tbody>

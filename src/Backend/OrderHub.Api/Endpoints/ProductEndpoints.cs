@@ -13,7 +13,7 @@ public static class ProductEndpoints
         {
             var products = await repo.GetAllAsync(ct);
             return Results.Ok(products.Select(p =>
-                new ProductDto(p.Id, p.Name, p.SteelGrade, p.DimensionMm, p.PricePerKg)));
+                new ProductDto(p.Id, p.Name, p.SteelGrade, p.DimensionMm, p.PricePerKg, p.LeadTimeDays)));
         });
 
         group.MapGet("/{id:int}", async (int id, IProductRepository repo, CancellationToken ct) =>
@@ -21,7 +21,7 @@ public static class ProductEndpoints
             var p = await repo.GetByIdAsync(id, ct);
             return p is null
                 ? Results.NotFound()
-                : Results.Ok(new ProductDto(p.Id, p.Name, p.SteelGrade, p.DimensionMm, p.PricePerKg));
+                : Results.Ok(new ProductDto(p.Id, p.Name, p.SteelGrade, p.DimensionMm, p.PricePerKg, p.LeadTimeDays));
         });
 
         return app;

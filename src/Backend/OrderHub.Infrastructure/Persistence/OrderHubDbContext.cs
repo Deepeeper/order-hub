@@ -56,6 +56,7 @@ public class OrderHubDbContext : DbContext
             e.Property(p => p.SteelGrade).HasMaxLength(32);
             e.Property(p => p.DimensionMm).HasMaxLength(64);
             e.Property(p => p.PricePerKg).HasPrecision(18, 2);
+            e.Property(p => p.LeadTimeDays).HasPrecision(8, 2);
         });
     }
 }
