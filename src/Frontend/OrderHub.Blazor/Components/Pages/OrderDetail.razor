@@ -21,7 +21,7 @@ else
     </header>
 
     <section class="oh-meta">
-        <div><strong>Status:</strong> <span class="oh-badge oh-badge-@_order.Status.ToString().ToLower()">@_order.Status</span></div>
+        <div><strong>Status:</strong> <span class="oh-badge oh-badge-@_order.Status.ToString().ToLower()">@_order.Status.Display()</span></div>
         <div><strong>Created:</strong> @_order.CreatedAt.ToString("yyyy-MM-dd HH:mm")</div>
         <div><strong>Due date:</strong> @(_order.DueDate?.ToString("yyyy-MM-dd") ?? "–")</div>
         @if (!string.IsNullOrEmpty(_order.Notes))
@@ -50,17 +50,14 @@ else
                         <td>@l.SteelGrade</td>
                         <td class="oh-right">@l.Quantity.ToString("N0")</td>
                         <td class="oh-right">@l.UnitPrice.ToString("N2")</td>
-                        @* KNOWN GAP: business logic (line amount) is computed here in the view
-                           instead of in the domain or the backend service. *@
-                        <td class="oh-right">@((l.Quantity * l.UnitPrice).ToString("N2"))</td>
+                        <td class="oh-right">@l.Amount.ToString("N2")</td>
                     </tr>
                 }
             </tbody>
             <tfoot>
                 <tr>
                     <td colspan="4" class="oh-right"><strong>Total:</strong></td>
-                    @* KNOWN GAP: the total is computed here in the view instead of in the backend. *@
-                    <td class="oh-right"><strong>@_order.Lines.Sum(l => l.Quantity * l.UnitPrice).ToString("N2")</strong></td>
+                    <td class="oh-right"><strong>@_order.Total.ToString("N2")</strong></td>
                 </tr>
             </tfoot>
         </table>
@@ -70,10 +67,10 @@ else
         <label>
             Change status:
             <select @bind="_newStatus">
-                <option value="Pending">Pending</option>
-                <option value="InProduction">In production</option>
-                <option value="Completed">Completed</option>
-                <option value="Cancelled">Cancelled</option>
+                @foreach (var s in Enum.GetValues<OrderStatus>())
+                {
+                    <option value="@s">@s.Display()</option>
+                }
             </select>
         </label>
         <button class="oh-btn oh-btn-primary" @onclick="UpdateStatusAsync">Save status</button>

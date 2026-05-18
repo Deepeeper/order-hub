@@ -21,20 +21,11 @@ public class OrderRepository : IOrderRepository
         // This is intentional for the demo. Catching and fixing this bug is one
         // of the aha-moments — Claude finds it by reading endpoint, repo, and the
         // one existing test.
-        var orders = await _db.Orders
+        return await _db.Orders
+            .Include(o => o.Lines)
             .Where(o => status == null || o.Status == status || o.Status == OrderStatus.Pending)
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync(ct);
-
-        // KNOWN GAP: N+1 query. Lines are fetched in a loop per order instead of using Include.
-        foreach (var order in orders)
-        {
-            order.Lines = await _db.OrderLines
-                .Where(l => l.OrderId == order.Id)
-                .ToListAsync(ct);
-        }
-
-        return orders;
     }
 
     public async Task<Order?> GetByIdAsync(int id, CancellationToken ct)

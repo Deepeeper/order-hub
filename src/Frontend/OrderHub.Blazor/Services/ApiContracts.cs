@@ -23,7 +23,8 @@ public record OrderLineDto(
     string ProductName,
     string SteelGrade,
     decimal Quantity,
-    decimal UnitPrice);
+    decimal UnitPrice,
+    decimal Amount);
 
 public record OrderDetailDto(
     int Id,
@@ -34,7 +35,8 @@ public record OrderDetailDto(
     DateTime CreatedAt,
     DateTime? DueDate,
     string? Notes,
-    List<OrderLineDto> Lines);
+    List<OrderLineDto> Lines,
+    decimal Total);
 
 public record CreateOrderRequest(
     int CustomerId,

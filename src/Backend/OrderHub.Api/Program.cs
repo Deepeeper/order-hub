@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
+using OrderHub.Api.Authentication;
 using OrderHub.Api.Endpoints;
 using OrderHub.Application.Customers;
 using OrderHub.Application.Orders;
@@ -28,9 +30,20 @@ builder.Services.AddCors(options =>
         .AllowAnyMethod());
 });
 
+// Authentication + authorization.
+// The DevBypass scheme auto-authenticates every request as a synthetic user.
+// Production swaps this for JWT bearer against Entra ID — endpoints already
+// declare RequireAuthorization(), so the change is a one-liner.
+builder.Services
+    .AddAuthentication(DevBypassHandler.SchemeName)
+    .AddScheme<AuthenticationSchemeOptions, DevBypassHandler>(DevBypassHandler.SchemeName, null);
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 app.UseCors();
+app.UseAuthentication();
+app.UseAuthorization();
 
 using (var scope = app.Services.CreateScope())
 {

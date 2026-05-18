@@ -46,7 +46,7 @@ else
                     <tr>
                         <td><a href="orders/@o.Id">@o.OrderNumber</a></td>
                         <td>@o.CustomerName</td>
-                        <td><span class="oh-badge oh-badge-@o.Status.ToString().ToLower()">@o.Status</span></td>
+                        <td><span class="oh-badge oh-badge-@o.Status.ToString().ToLower()">@o.Status.Display()</span></td>
                         <td>@o.CreatedAt.ToString("yyyy-MM-dd")</td>
                     </tr>
                 }

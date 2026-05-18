@@ -6,15 +6,9 @@ public class OrderApiClient
 {
     private readonly HttpClient _http;
 
-    // KNOWN GAP: the API URL is hardcoded here instead of being read from configuration.
-    // Intentionally introduced as demo material — the moment you run against any
-    // environment other than local, things break.
-    private const string ApiBaseUrl = "http://localhost:5101";
-
     public OrderApiClient(HttpClient http)
     {
         _http = http;
-        _http.BaseAddress = new Uri(ApiBaseUrl);
     }
 
     public async Task<List<OrderSummaryDto>> GetOrdersAsync(OrderStatus? status = null, CancellationToken ct = default)
@@ -51,7 +45,6 @@ public class CustomerApiClient
     public CustomerApiClient(HttpClient http)
     {
         _http = http;
-        _http.BaseAddress = new Uri("http://localhost:5101");
     }
 
     public async Task<List<CustomerDto>> GetCustomersAsync(CancellationToken ct = default)
@@ -68,7 +61,6 @@ public class ProductApiClient
     public ProductApiClient(HttpClient http)
     {
         _http = http;
-        _http.BaseAddress = new Uri("http://localhost:5101");
     }
 
     public async Task<List<ProductDto>> GetProductsAsync(CancellationToken ct = default)

@@ -6,9 +6,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddHttpClient<OrderApiClient>();
-builder.Services.AddHttpClient<CustomerApiClient>();
-builder.Services.AddHttpClient<ProductApiClient>();
+var apiBaseUrl = builder.Configuration["Api:BaseUrl"]
+    ?? throw new InvalidOperationException("Api:BaseUrl must be configured in appsettings.json.");
+
+void RegisterApiClient<TClient>() where TClient : class
+    => builder.Services.AddHttpClient<TClient>(client =>
+    {
+        client.BaseAddress = new Uri(apiBaseUrl);
+    });
+
+RegisterApiClient<OrderApiClient>();
+RegisterApiClient<CustomerApiClient>();
+RegisterApiClient<ProductApiClient>();
 
 var app = builder.Build();
 

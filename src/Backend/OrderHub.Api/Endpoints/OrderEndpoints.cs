@@ -39,6 +39,13 @@ public static class OrderEndpoints
             var order = await repo.GetByIdAsync(id, ct);
             if (order is null) return Results.NotFound();
 
+            var lines = order.Lines
+                .Select(l => new OrderLineDto(
+                    l.Id, l.ProductId, l.ProductName, l.SteelGrade,
+                    l.Quantity, l.UnitPrice,
+                    l.Quantity * l.UnitPrice))
+                .ToList();
+
             var dto = new OrderDetailDto(
                 order.Id,
                 order.OrderNumber,
@@ -48,15 +55,13 @@ public static class OrderEndpoints
                 order.CreatedAt,
                 order.DueDate,
                 order.Notes,
-                order.Lines.Select(l => new OrderLineDto(
-                    l.Id, l.ProductId, l.ProductName, l.SteelGrade, l.Quantity, l.UnitPrice)).ToList());
+                lines,
+                lines.Sum(l => l.Amount));
 
             return Results.Ok(dto);
         });
 
         // POST /api/orders
-        // KNOWN GAP: no validation. CustomerId 0 or missing, empty Lines, negative Quantity —
-        // all accepted without any check.
         group.MapPost("/", async (
             CreateOrderRequest request,
             IOrderRepository orderRepo,
@@ -64,19 +69,46 @@ public static class OrderEndpoints
             IProductRepository productRepo,
             CancellationToken ct) =>
         {
+            // Input validation
+            var errors = new Dictionary<string, string[]>();
+            if (request.CustomerId <= 0)
+                errors["customerId"] = new[] { "CustomerId is required." };
+            if (request.Lines is null || request.Lines.Count == 0)
+                errors["lines"] = new[] { "At least one order line is required." };
+            else
+            {
+                if (request.Lines.Any(l => l.Quantity <= 0))
+                    errors["lines.quantity"] = new[] { "All line quantities must be positive." };
+                if (request.Lines.Any(l => l.ProductId <= 0))
+                    errors["lines.productId"] = new[] { "Every line must reference a valid product." };
+            }
+            if (errors.Count > 0)
+                return Results.ValidationProblem(errors);
+
             var customer = await customerRepo.GetByIdAsync(request.CustomerId, ct);
+            if (customer is null)
+                return Results.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    ["customerId"] = new[] { $"Customer {request.CustomerId} not found." }
+                });
 
             var lines = new List<OrderLine>();
-            foreach (var l in request.Lines)
+            foreach (var l in request.Lines!)
             {
                 var product = await productRepo.GetByIdAsync(l.ProductId, ct);
+                if (product is null)
+                    return Results.ValidationProblem(new Dictionary<string, string[]>
+                    {
+                        ["lines.productId"] = new[] { $"Product {l.ProductId} not found." }
+                    });
+
                 lines.Add(new OrderLine
                 {
                     ProductId = l.ProductId,
-                    ProductName = product?.Name ?? "(unknown)",
-                    SteelGrade = product?.SteelGrade ?? string.Empty,
+                    ProductName = product.Name,
+                    SteelGrade = product.SteelGrade,
                     Quantity = l.Quantity,
-                    UnitPrice = product?.PricePerKg ?? 0m
+                    UnitPrice = product.PricePerKg
                 });
             }
 
@@ -84,7 +116,7 @@ public static class OrderEndpoints
             {
                 OrderNumber = $"OH-{DateTime.UtcNow:yyyyMMddHHmmss}",
                 CustomerId = request.CustomerId,
-                CustomerName = customer?.Name ?? "(unknown customer)",
+                CustomerName = customer.Name,
                 Status = OrderStatus.Pending,
                 CreatedAt = DateTime.UtcNow,
                 DueDate = request.DueDate,
@@ -94,10 +126,12 @@ public static class OrderEndpoints
 
             await orderRepo.AddAsync(order, ct);
             return Results.Created($"/api/orders/{order.Id}", order.Id);
-        });
+        }).RequireAuthorization();
 
         // PATCH /api/orders/{id}/status
-        // KNOWN GAP: no authorization. Anyone can change status, including to Cancelled.
+        // Requires authentication. In production this would map to a specific
+        // Entra ID role/policy (e.g. "OrderManagement"). For the reference app
+        // the dev-bypass authentication scheme accepts every request.
         group.MapPatch("/{id:int}/status", async (
             int id,
             UpdateStatusRequest request,
@@ -109,7 +143,7 @@ public static class OrderEndpoints
             order.Status = request.Status;
             await repo.UpdateAsync(order, ct);
             return Results.NoContent();
-        });
+        }).RequireAuthorization();
 
         // KNOWN GAP: no DELETE endpoint exists, even though the UI expects to be able to delete.
 

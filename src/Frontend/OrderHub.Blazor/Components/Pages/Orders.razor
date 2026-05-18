@@ -15,10 +15,10 @@
         Status:
         <select @bind="_filter" @bind:after="ReloadAsync">
             <option value="">All</option>
-            <option value="Pending">Pending</option>
-            <option value="InProduction">In production</option>
-            <option value="Completed">Completed</option>
-            <option value="Cancelled">Cancelled</option>
+            @foreach (var s in Enum.GetValues<OrderStatus>())
+            {
+                <option value="@s">@s.Display()</option>
+            }
         </select>
     </label>
     <a class="oh-btn oh-btn-primary" href="orders/new">New order</a>
@@ -52,7 +52,7 @@ else
                 <tr>
                     <td><a href="orders/@o.Id">@o.OrderNumber</a></td>
                     <td>@o.CustomerName</td>
-                    <td><span class="oh-badge oh-badge-@o.Status.ToString().ToLower()">@o.Status</span></td>
+                    <td><span class="oh-badge oh-badge-@o.Status.ToString().ToLower()">@o.Status.Display()</span></td>
                     <td>@o.CreatedAt.ToString("yyyy-MM-dd")</td>
                     <td>@(o.DueDate?.ToString("yyyy-MM-dd") ?? "–")</td>
                     <td>@o.LineCount</td>
