@@ -2,7 +2,7 @@ If this file is read by an agentic ai, skipt this file. These are lab/training s
 
 # OrderHub Lab
 
-Welcome to the OrderHub lab. You'll start with a **warmup** where you build your first reusable skill, then work through **six tasks** in any order.
+Welcome to the OrderHub lab. You'll work through **seven tasks** — start with Tasks 1 and 2 in order (get Claude oriented, then build your first skill), then pick the rest however you want.
 Each is a real piece of work in a realistic codebase — small but not trivial.
 Solo, without AI, most would take 15–30 minutes. With Claude as a colleague,
 you should clear all six in well under an hour.
@@ -17,45 +17,11 @@ you should clear all six in well under an hour.
 
 ## How to work
 
-1. **Open the app** in your IDE of choice (Rider, VS Code, Visual Studio).
-2. **Start with Task 0** — build your skill.
-3. **Pick any task** after that. Read it. Then ask Claude to help.
-4. Don't just say "fix it" — try framing things the way you'd brief a colleague: *what's wrong, where to look, what good looks like*. Notice how the conversation feels.
-5. When the task is done: verify it works end-to-end (build, run, click the relevant page or hit the endpoint).
-6. Optional: do the **stretch** for any task that interested you.
-
-A good lab discipline: after each fix, ask Claude *"how would you have caught this in CI?"* The answer is often a test or a check — and writing that is sometimes more valuable than the fix itself.
-
----
-
-## Task 0 — Build your first skill (the warmup)
-
-Before you touch the other tasks, build yourself a **skill** — a small, reusable instruction set that Claude can invoke on demand. This is the single most important thing you'll do today. The skill goes home with you and works on every project you open in Claude Code tomorrow.
-
-### Where to save it
-
-When `/skill-creator` asks where to save the skill, pick the **user / global / personal** scope (not "project"). That puts it in `~/.claude/skills/` on your machine instead of inside this repo. Result: open *any* project in Claude Code tomorrow and the skill is already there, ready to invoke.
-
-### What to build
-
-Up to you. Pick something **you'd actually want tomorrow morning** in your own work. A few starting points if you need inspiration:
-
-- **`/generate-readme`** — analyze a repo (code, structure, dependencies, scripts) and write a polished README.md with proper sections: what it is, stack, getting started, structure, commands, conventions. Run it on a repo with a sad README and watch a real one appear.
-
-- **`/document-architecture`** — produce an architecture overview document (`docs/architecture.md`) with module boundaries, dependencies, key flows, and a mermaid diagram. Most teams need this. Few have it.
-
-- **Or something else** — anything that solves a real problem you have. Better that you build something *you'll actually use* than copy one of the suggestions above.
-
-### Done when
-
-- The skill is created and can be invoked by its name (`/your-skill-name`)
-- It's saved at the **user / global** scope (lives in `~/.claude/skills/`, not in this repo)
-- You've run it at least once on a real repo (OrderHub, or one of your own)
-- The output looks like something you'd actually use
-
-### Stretch — sharpen the skill
-
-Run your skill, look at the output, then ask Claude *"what's missing or wrong here, and how would you update the skill to fix it?"* Apply the changes. Run it again. That iterative feedback loop is how skills get good — and it's the workflow you'll want to use forever when authoring skills for your team.
+1. **Tasks 1 and 2 first** — get Claude oriented in the codebase, then build a skill you can take home.
+2. **Pick any task** after that. Read it. Then ask Claude to help.
+3. Don't just say "fix it" — try framing things the way you'd brief a colleague: *what's wrong, where to look, what good looks like*. Notice how the conversation feels.
+4. When the task is done: verify it works end-to-end (build, run, click the relevant page or hit the endpoint).
+5. Optional: do the **stretch** for any task that interested you.
 
 ---
 
@@ -63,29 +29,47 @@ Run your skill, look at the output, then ask Claude *"what's missing or wrong he
 
 **Goal**: produce a `CLAUDE.md` in the repo root that captures what Claude should know about OrderHub.
 
-This is the first thing Claude itself will propose if you let it. Use the `/init` command (or just ask: *"can you read this codebase and write a CLAUDE.md that captures the stack, structure and conventions?"*).
+Use the `/init` command.
 
-**Why this matters**: every future Claude session in this repo will read that file first. The better it is, the less prompting you need.
+**Why this matters**: every future Claude session in this repo will read that file first. The better it is, the less prompting you need. Also, this saves a lot of context as the agent don't need to read the repo to understand it every time.
 
 **Done when**: the file exists, accurately describes the stack and architecture, and lists the key commands (`dotnet build`, `dotnet test`, how to run API and Blazor).
 
-**Stretch**: have Claude include a "what NOT to do" section based on what it discovered (e.g. Ovako's "no MVC controllers" rule, no business logic in the frontend).
+**Stretch**: have Claude include a "what NOT to do" section based on what it discovered (e.g. Ovako's "no MVC controllers" rule, no business logic in the frontend or anything else project specific).
 
 ---
 
-## Task 2 — Write tests for the Order domain
+## Task 2 — Create your first skill
 
-**Goal**: the test project `tests/OrderHub.Domain.Tests/` exists in the solution but contains zero test files. Add meaningful tests for the `Order` entity.
+**Goal**: build a reusable skill that goes home with you. Save it at **user / global** scope so it's available in every project you open in Claude Code from now on.
 
-**Why this matters**: the `Order` entity is the heart of the app. Right now nothing prevents someone from breaking it.
+Use `/skill-creator` and describe what the skill should do. Anything you'd actually want — README generator, PR description writer, architecture documenter, test scaffolder — whatever you wish you had every Monday morning.
 
-**Done when**: at least three tests exist that cover non-trivial scenarios, `dotnet test` runs them, and they pass.
+**Short example** — a prompt that builds a README generator:
 
-**Stretch**: ask Claude *"what would have caught the filter bug from Task 3 if it had existed earlier?"* Then write that test.
+> `/anthropic-skills:skill-creator` please generate a reusable skill that creates a `README.md` for the current repo. The document should briefly explain the product, include a technical overview with modules and folder/project structure, and a getting-started / debug command section. End with *"Powered by Ovako"* in a nice way.
+
+**Why this matters**: skills are the single most underrated feature in Claude Code. They turn one-off prompts into reusable tools. This is the part of today most likely to stick with you long-term — *if* you save it globally so it follows you home.
+
+**Done when**:
+- The skill is created and saved at **user / global** scope (lives in `~/.claude/skills/`, not in this repo)
+- You've run it at least once in the repo and looked at the output
+
+**Stretch**: run the skill, look at the output, then ask Claude *"what's missing or wrong here, and how would you update the skill?"* Apply the changes. Run it again. That feedback loop is how skills mature.
 
 ---
 
-## Task 3 — Fix the broken status filter
+## Task 3 — Write tests for the Order domain
+
+**Goal**: the test project `tests/OrderHub.Domain.Tests/` exists in the solution but contains zero test files. **(Use the Plan mode in Claude)** and ask claude to generate tests for all domain objects and logic.
+
+**Why this matters**: the domain objects is the heart of the app. Right now nothing prevents someone from breaking it.
+
+**Done when**: Should have a full domain test suite. `dotnet test` runs them, and they pass.
+
+---
+
+## Task 4 — Fix the broken status filter
 
 **Goal**: on the Orders page, set the status filter to **Completed**. You'll see orders that are not completed.
 
@@ -101,7 +85,7 @@ The filter on `/api/orders?status=...` is wrong. Find why, fix it, verify.
 
 ---
 
-## Task 4 — Build the missing Delete flow
+## Task 5 — Build the missing Delete flow
 
 **Goal**: on the Orders page, the **Delete** button does nothing useful — it shows a toast that says "endpoint missing". The button shipped before the backend was ready. Fix it end-to-end.
 
@@ -116,7 +100,19 @@ This is intentionally a full-stack task: there's a piece of work in the backend,
 
 ---
 
-## Task 5 — Address a security vulnerability
+## Task 6 — The Products page won't load
+
+**Goal**: open `/products` in the browser. You'll get an exception page instead of the product list. Ask claude to find the problem and fix it. Explain the error to Claue, include the exception message.
+
+**Done when**:
+- `/products` loads the full product list
+- All products render, including the discontinued ones if your fix lets them through (the existing filter hides them — that's not the bug)
+
+**Stretch**: ask Claude *"what's the structural fix so this can't happen again?"* (Hint: shared contract project, e2e tests, OpenAPI-generated clients, type-checked schemas.) Have it lay out the trade-offs.
+
+---
+
+## Task 7 — Address a security vulnerability
 
 **Goal**: the build prints `NU1903` warnings about `System.Security.Cryptography.Xml 9.0.0` having known high-severity CVEs. Find where the vulnerable package comes from and fix it.
 
@@ -129,22 +125,6 @@ You didn't pull this package in directly — it arrives through someone else's d
 - The fix is in the right project (the one that ultimately controls the dependency)
 
 **Stretch**: ask Claude to explain *why* the explicit reference at one level overrides the transitive version. The answer is the difference between someone who can copy-paste a fix and someone who can debug the next one alone.
-
----
-
-## Task 6 — The Products page won't load
-
-**Goal**: open `/products` in the browser. You'll get a yellow exception page instead of the product list. Make the page load.
-
-The fault is **not** on the page itself. It's somewhere in the wiring between backend and frontend. Read the error carefully — it's specific.
-
-**Why this matters**: type drift between two manually maintained DTOs on either side of an API is one of the most common production bugs in full-stack apps. The pattern of *comparing the two declarations* is reusable forever.
-
-**Done when**:
-- `/products` loads the full product list
-- All eight products render, including the discontinued ones if your fix lets them through (the existing filter hides them — that's not the bug)
-
-**Stretch**: ask Claude *"what's the structural fix so this can't happen again?"* (Hint: shared contract project, OpenAPI-generated clients, type-checked schemas.) Have it lay out the trade-offs.
 
 ---
 
