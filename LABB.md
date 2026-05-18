@@ -1,19 +1,56 @@
 # OrderHub Lab
 
-Welcome to the OrderHub lab. You have **six tasks** to work through, in any order.
-Each one is a real piece of work in a realistic codebase — small but not trivial.
-Solo, without AI, most would take 15–45 minutes. With Claude as a colleague, you
-should clear all six in well under an hour.
+Welcome to the OrderHub lab. You'll start with a **warmup** where you build
+your first reusable skill, then work through **six tasks** in any order.
+Each is a real piece of work in a realistic codebase — small but not trivial.
+Solo, without AI, most would take 15–45 minutes. With Claude as a colleague,
+you should clear all six in well under an hour.
 
 ## How to work
 
 1. **Open the app** in your IDE of choice (Rider, VS Code, Visual Studio — there's a Compound run config in `.run/` for Rider that starts API + Blazor together).
-2. **Pick a task** below. Read it. Then ask Claude to help.
-3. Don't just say "fix it" — try framing things the way you'd brief a colleague: *what's wrong, where to look, what good looks like*. Notice how the conversation feels.
-4. When the task is done: verify it works end-to-end (build, run, click the relevant page or hit the endpoint).
-5. Optional: do the **stretch** for any task that interested you.
+2. **Start with Task 0** — build your skill. This is the thing you take home.
+3. **Pick any task** after that. Read it. Then ask Claude to help.
+4. Don't just say "fix it" — try framing things the way you'd brief a colleague: *what's wrong, where to look, what good looks like*. Notice how the conversation feels.
+5. When the task is done: verify it works end-to-end (build, run, click the relevant page or hit the endpoint).
+6. Optional: do the **stretch** for any task that interested you.
 
 A good lab discipline: after each fix, ask Claude *"how would you have caught this in CI?"* The answer is often a test or a check — and writing that is sometimes more valuable than the fix itself.
+
+---
+
+## Task 0 — Build your first skill (the warmup)
+
+Before you touch the other tasks, build yourself a **skill** — a small, reusable instruction set that Claude can invoke on demand. This is the single most important thing you'll do today. The skill goes home with you and works on every project you open in Claude Code tomorrow.
+
+### Where to save it
+
+When `/skill-creator` asks where to save the skill, pick the **user / global / personal** scope (not "project"). That puts it in `~/.claude/skills/` on your machine instead of inside this repo. Result: open *any* project in Claude Code tomorrow and the skill is already there, ready to invoke.
+
+### What to build
+
+Up to you. Pick something **you'd actually want tomorrow morning** in your own work. A few starting points if you need inspiration:
+
+- **`/generate-readme`** — analyze a repo (code, structure, dependencies, scripts) and write a polished README.md with proper sections: what it is, stack, getting started, structure, commands, conventions. Run it on a repo with a sad README and watch a real one appear.
+
+- **`/document-architecture`** — produce an architecture overview document (`docs/architecture.md`) with module boundaries, dependencies, key flows, and a mermaid diagram. Most teams need this. Few have it.
+
+- **`/write-pr-description`** — given the current branch's diff against `main`, write a polished PR description: summary, changes, test plan, risks, breaking changes. You'll use this daily.
+
+- **`/onboard-this-repo`** — generate a "new joiner read this first" document that walks someone through the codebase: how to run it, where to start reading, key patterns, common gotchas.
+
+- **Or something else** — anything that solves a real problem you have. Better that you build something *you'll actually use* than copy one of the suggestions above.
+
+### Done when
+
+- The skill is created and can be invoked by its name (`/your-skill-name`)
+- It's saved at the **user / global** scope (lives in `~/.claude/skills/`, not in this repo)
+- You've run it at least once on a real repo (OrderHub, or one of your own)
+- The output looks like something you'd actually use
+
+### Stretch — sharpen the skill
+
+Run your skill, look at the output, then ask Claude *"what's missing or wrong here, and how would you update the skill to fix it?"* Apply the changes. Run it again. That iterative feedback loop is how skills get good — and it's the workflow you'll want to use forever when authoring skills for your team.
 
 ---
 
