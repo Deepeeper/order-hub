@@ -26,7 +26,8 @@ project.assets.json
 Thumbs.db
 
 # Data
-data/*.db
+# Keep the seeded orderhub.db committed so the app runs on first clone.
+# Ignore SQLite sidecar files (journal / write-ahead log / shared memory).
 data/*.db-journal
 data/*.db-wal
 data/*.db-shm
